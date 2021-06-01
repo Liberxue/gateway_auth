@@ -26,10 +26,10 @@ type TokenInfo struct {
 
 // GenToken
 // TokenInfo
-// reurun (token string, err error)
+// return (token string, err error)
 func GenToken(t *TokenInfo) (string, error) {
 	maxAge := 60 * 60 * 24
-	//采用HMAC SHA256加密算法
+	//HMAC SHA256
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &CustomClaims{
 		TokenInfo: TokenInfo{
 			UserId:        t.UserId,
@@ -38,7 +38,7 @@ func GenToken(t *TokenInfo) (string, error) {
 			PhoneNumber:   t.PhoneNumber,
 		},
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Duration(maxAge) * time.Second).Unix(), // 过期时间，必须设置
+			ExpiresAt: time.Now().Add(time.Duration(maxAge) * time.Second).Unix(), //Expires Time
 			Issuer:    "Gateway",
 		},
 	})
@@ -51,10 +51,13 @@ func GenToken(t *TokenInfo) (string, error) {
 
 //ParseToken
 func ParseToken(tokenString string) (*CustomClaims, error) {
-	if  len(tokenString) < 5 {
+	if len(tokenString) < 5 {
 		return nil, errors.New("token invalid auth token")
 	}
-	token, err := jwt.ParseWithClaims(tokenString, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &CustomClaims{
+		TokenInfo:      TokenInfo{},
+		StandardClaims: jwt.StandardClaims{},
+	}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
@@ -62,12 +65,11 @@ func ParseToken(tokenString string) (*CustomClaims, error) {
 	})
 	if claims, ok := token.Claims.(*CustomClaims); ok && token.Valid {
 		return claims, nil
-	} else {
-		return nil, err
 	}
+	return nil, err
 }
 
-//从token中获取用户唯一标识
+// Get UserId From Token
 func UserClaimFromToken(tokenInfo TokenInfo) string {
 	return tokenInfo.UserId
 }

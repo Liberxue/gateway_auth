@@ -24,13 +24,11 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
 
+	pb "github.com/Liberxue/gateway_auth/protocol/proto"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	grpc_zap "github.com/grpc-ecosystem/go-grpc-middleware/logging/zap"
 	grpc_recovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
-
-	// Update
-	pb "github.com/Liberxue/gateway_auth/protocol/proto"
 
 	"google.golang.org/grpc"
 )
@@ -112,7 +110,7 @@ func RunGrpcServer(args *conf.ArgConfig) error {
 	gwmux := runtime.NewServeMux()
 	err = pb.RegisterGateWayHandlerFromEndpoint(ctx, gwmux, address, opts)
 	if err != nil {
-		fmt.Println(err)
+		zap.Log.Error(err)
 		return err
 	}
 	// mux.HandleFunc("/openapiv2/", openAPIServer(opts.OpenAPIDir))
@@ -147,7 +145,6 @@ func RunGrpcServer(args *conf.ArgConfig) error {
 	)
 	// err = store.InitRethinkDB()
 	// if err != nil {
-	// 	fmt.Println(err)
 	// 	// return err
 	// }
 	err = utils.InitAliyunOss(args)
@@ -179,8 +176,8 @@ func RunGrpcServer(args *conf.ArgConfig) error {
 
 	// m := cmux.New(lis)
 
-	// // Match connections in order:
-	// // First grpc, then HTTP, and otherwise Go RPC/TCP.
+	// Match connections in order:
+	// First grpc, then HTTP, and otherwise Go RPC/TCP.
 	// grpcL := m.Match(cmux.HTTP2HeaderField("content-type", "application/grpc"))
 	// httpL := m.Match(cmux.HTTP1Fast())
 	// trpcL := m.Match(cmux.Any())
@@ -198,9 +195,8 @@ func RunGrpcServer(args *conf.ArgConfig) error {
 	// http.ListenAndServe(":8080", mux)
 	// go http.Serve(lis)
 	go s.Serve(lis)
-	// // http.Serve(lis)
+	// http.Serve(lis)
 	// go http.Serve(lis)
-	// fmt.Println(err)
 	http.ListenAndServe()
 
 	// go s.Serve(grpcL)
@@ -214,25 +210,23 @@ func RunGrpcServer(args *conf.ArgConfig) error {
 // connections or otherHandler otherwise. Copied from cockroachdb.
 func grpcHandlerFunc(grpcServer *grpc.Server, otherHandler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println(("sddhdshjdhdhsdhsdhj"))
-		fmt.Println(r.ProtoMajor)
-		fmt.Println(r.Header.Get("Content-Type"))
-		fmt.Println(strings.Contains(r.Header.Get("Content-Type"), "application/grpc"))
+		zap.Log.Debug(r.ProtoMajor)
+		zap.Log.Debug(r.Header.Get("Content-Type"))
+		zap.Log.Debug(strings.Contains(r.Header.Get("Content-Type"), "application/grpc"))
 		// TODO(tamird): point to merged gRPC code rather than a PR.
 		// This is a partial recreation of gRPC's internal checks https://github.com/grpc/grpc-go/pull/514/files#diff-95e9a25b738459a2d3030e1e6fa2a718R61
 		if r.ProtoMajor == 2 && strings.Contains(r.Header.Get("Content-Type"), "application/grpc") {
-			fmt.Println("application/grpc")
 			grpcServer.ServeHTTP(w, r)
 		} else {
-			fmt.Println("no grpc")
 			otherHandler.ServeHTTP(w, r)
 		}
 	})
 }
 
-// RecoveryInterceptor panic时返回Unknown错误吗
+// RecoveryInterceptor panic
 func recoveryInterceptor() grpc_recovery.Option {
 	return grpc_recovery.WithRecoveryHandler(func(p interface{}) (err error) {
+		zap.Log.Errorf("RecoveryInterceptor: Code: %d ,Panic triggered: %v", codes.Unknown, p)
 		return grpc.Errorf(codes.Unknown, "panic triggered: %v", p)
 	})
 }

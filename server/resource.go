@@ -34,14 +34,9 @@ func (h *GateWayServer) ResourceDownload(ctx context.Context, r *pb.ResourceDown
 	// resp, _ := c.RechargeCoinByAccountId(ctx, &pb.RechargeCoinByAccountIdRequest{
 	// 	AccountId: r.AccountId,
 	// 	//Coin:      3,
-	// 	Coin: 0, //不扣积分
+	// 	Coin: 0, //...
 	// })
-	// if resp.Code != pb.ResponseCode_SUCCESSFUL {
-	// 	return &pb.ResourceDownloadResponse{
-	// 		Code:    resp.Code,
-	// 		Message: resp.Message,
-	// 	}, nil
-	// }
+
 	return &pb.ResourceDownloadResponse{
 		Code:    pb.ResponseCode_SUCCESSFUL,
 		Message: pb.ResponseCode_SUCCESSFUL.String(),

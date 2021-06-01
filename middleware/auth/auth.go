@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/PomCloud/go_tools"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
@@ -15,12 +14,9 @@ import (
 
 func GateWayAuthFunc(ctx context.Context) (context.Context, error) {
 	token, err := grpc_auth.AuthFromMD(ctx, "bearer")
-	fmt.Println(err)
-	fmt.Println(len(token))
-	if err != nil || len(token) < 5 {
+	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, "invalid auth token: %v", err)
 	}
-	fmt.Println(token)
 	tokenInfo, err := ParseToken(token)
 	if err != nil || tokenInfo == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "invalid auth token: %v", err)
@@ -38,7 +34,7 @@ func GateWayAuthFunc(ctx context.Context) (context.Context, error) {
 // func UnaryServerInterceptor(forceNew bool) grpc.UnaryServerInterceptor {
 // 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 // 		// md, _ := metadata.FromIncomingContext(ctx)
-// 		// fmt.Println(go_tools.GetClientIP(ctx))
+// 		// log.Println(go_tools.GetClientIP(ctx))
 // 		// log.Println("info:", info.FullMethod, info.Server)
 // 		// log.Println("incoming md:", md)
 // 		// log.Println("req:", req)
@@ -71,7 +67,6 @@ func GateWayAuthFunc(ctx context.Context) (context.Context, error) {
 // // func UnaryServerInterceptor(forceNew bool) grpc.UnaryServerInterceptor {
 // // 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 // // 		md, _ := metadata.FromIncomingContext(ctx)
-// // 		fmt.Println(go_tools.GetClientIP(ctx))
 // // 		log.Println("info:", info.FullMethod, info.Server)
 // // 		log.Println("incoming md:", md)
 // // 		log.Println("req:", req)

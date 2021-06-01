@@ -31,6 +31,6 @@ func (h *GateWayServer) GetMsgChannel(ctx context.Context, r *pb.GetMsgChannelRe
 	return &pb.GetMsgChannelResponse{
 		Message: pb.ResponseCode_SUCCESSFUL.String(),
 		// Msg:     resp.Msg,
-		Msg:  []string{"欢迎使用词影配音，联系客户免费获取高级版本内测配音"},
+		Msg:  []string{"Test Msg Channel"},
 		Code: pb.ResponseCode_SUCCESSFUL}, nil
 }

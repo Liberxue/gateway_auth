@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"time"
 
 	"golang.org/x/net/context"
 
@@ -21,7 +22,7 @@ func (h *GateWayServer) FavoriteList(ctx context.Context, r *pb.FavoriteListRequ
 	for i := 0; i <= 100; i++ {
 		searchMockList = append(searchMockList, &pb.FavoriteList{
 			ResourceId: fmt.Sprintf("%s_Source%d", go_tools.RandString(3), i),
-			CreateTime: 2223232323,
+			CreateTime: time.Now().Unix(),
 			// ResourceType: pb.common.Re,
 		})
 	}

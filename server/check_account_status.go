@@ -11,7 +11,7 @@ import (
 func (h *GateWayServer) CheckAccountIdStatus(ctx context.Context, r *pb.CheckAccountIdStatusRequest) (*pb.CheckAccountIdStatusResponse, error) {
 	remoteRequest := newRemoteRequest(conf.GetBashArg().AccountAddress)
 	defer remoteRequest.conn.Close()
-	// 如果后台服务错误，范围成功客户继续使用
+	// backed error client pass
 	if remoteRequest.err != nil {
 		zap.Log.Errorf("CheckAccountIdStatusResponse remoteRequest err :%s", remoteRequest.err.Error())
 		return &pb.CheckAccountIdStatusResponse{
@@ -24,7 +24,7 @@ func (h *GateWayServer) CheckAccountIdStatus(ctx context.Context, r *pb.CheckAcc
 	resp, _ := c.CheckAccountIdStatus(ctx, &pb.CheckAccountIdStatusRequest{
 		AccountId: r.AccountId,
 	})
-	// 如果后台服务错误，范围成功客户继续使用
+	// backed error client pass
 	if resp.Code != pb.ResponseCode_SUCCESSFUL {
 		return &pb.CheckAccountIdStatusResponse{
 			Code:    resp.Code,

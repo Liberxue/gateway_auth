@@ -70,9 +70,5 @@ func (s *ArgConfig) IsEmpty() bool {
 	if *helpFlag {
 		return false
 	}
-
-	if go_tools.EmptyString(s.ServerAddress) && go_tools.ValidInt(s.ServerPort) && go_tools.EmptyString(s.ResourceAddress) && go_tools.EmptyString(s.AccountAddress) {
-		return true
-	}
-	return false
+	return go_tools.EmptyString(s.ServerAddress) && go_tools.ValidInt(s.ServerPort) && go_tools.EmptyString(s.ResourceAddress) && go_tools.EmptyString(s.AccountAddress)
 }

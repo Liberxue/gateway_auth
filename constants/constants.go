@@ -8,11 +8,11 @@ const (
 	ReadAll           = "readAll"
 	ReadUser          = "readUser"
 	Delete            = "delete"
-	YarnCDN           = "https://y.yarn.co/"
+	YarnCDN           = ""
 	RoutineCountTotal = 10 //限制并发数量
 
-	StatusFinish      = 0 //finish
-	StatusError       = -1
-	StatusPending     = 1   //入库
-	StatusSourceError = 404 //finish
+	StatusFinish      = 0   //Finished
+	StatusError       = -1  //Error
+	StatusPending     = 1   //Init
+	StatusSourceError = 404 //SourceError
 )
